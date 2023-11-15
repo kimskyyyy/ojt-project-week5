@@ -1,6 +1,20 @@
 var UserRealm = require("../db/realm");
 const uuid = require("uuid"); // uuid 모듈 추가
 
+//------------------------------ 공통 메서드------------------------------//
+
+// 이메일 기반 계정 조회
+function findUserByEmail(email) {
+  return UserRealm.objects("User").filtered(`email = "${email}"`)[0];
+}
+
+// 이메일 기반 비밀번호 조회
+function findPassword(password, inputPassword) {
+  return password === inputPassword;
+}
+
+//------------------------------ 계정 관련 메서드------------------------------//
+
 function account(req, res, next) {
   const user = findUserByEmail(req.body.email);
   console.log(JSON.stringify(user));
@@ -22,18 +36,6 @@ function account(req, res, next) {
     console.log(error);
     return 0;
   }
-}
-
-//------------------------------ 공통 메서드------------------------------//
-
-// 이메일 기반 계정 조회
-function findUserByEmail(email) {
-  return UserRealm.objects("User").filtered(`email = "${email}"`)[0];
-}
-
-// 이메일 기반 비밀번호 조회
-function findPassword(password, inputPassword) {
-  return password === inputPassword;
 }
 
 module.exports = { account, findUserByEmail, findPassword };
