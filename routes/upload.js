@@ -5,9 +5,10 @@ const multer = require("multer"); // multer 모듈: 파일 업로드를 위한 m
 const fs = require("fs"); // fs 모듈: 파일 시스템을 조작하는 다양한 메서드 제공
 const path = require("path"); // path 모듈: 파일 및 디렉토리 경로 작업을 위한 다양한 메서드 제공
 
-const session = require("../module/sessionModule"); // session 모듈 추가
+const session = require("../module/sessionModule"); // session 모듈
+const response = require("../util/response"); // 공통 응답 모듈
 
-const response = require("../util/response");
+//------------------------------ 파일 업로드 관련 설정------------------------------//
 
 // 파일을 업로드할 uploads 폴더 생성
 fs.readdir("uploads", (error) => {
@@ -16,29 +17,39 @@ fs.readdir("uploads", (error) => {
     fs.mkdirSync("uploads");
   }
 });
-// 파일 업로드 설정
+
+/*
+파일 업로드 처리를 위해 multer 모듈 사용
+
+multer.diskStorage: 파일 저장 방식을 정하는 옵션
+
+destination: 파일이 저장될 경로를 정하는 옵션
+  cb: 콜백함수로 전송된 파일을 저장할 폴더를 지정하는데 사용
+  첫 번째 매개변수: 에러가 발생하면 해당 에러를 전달
+  두 번째 매개변수: 실제 저장할 폴더를 지정
+
+filename: 파일의 이름을 정하는 옵션
+  cb: 콜백함수로 전송된 파일을 저장할 이름을 지정하는데 사용
+  첫 번째 매개변수: 에러가 발생하면 해당 에러를 전달
+  두 번째 매개변수: 파일의 이름을 지정
+*/
+
 const upload = multer({
   storage: multer.diskStorage({
     // 파일 저장 경로 설정
     destination(req, file, cb) {
-      // cb 콜백 함수를 통해 전송된 파일 저장 디렉토리 설정, 'uploads/' 디렉토리로 지정
-      cb(null, "uploads/");
+      cb(null, "uploads/"); // cb 콜백 함수를 통해 전송된 파일 저장 디렉토리 설정, 'uploads/' 디렉토리로 지정
     },
     // 파일 저장명 설정
     filename(req, file, cb) {
-      const ext = path.extname(file.originalname);
-      // cb(null, path.basename(file.originalname, ext) + new Date().valueOf() + ext);
-      // cb 콜백 함수를 통해 전송된 파일 이름 설정
-      // cb(null, path.basename(file.originalname, ext));
       cb(null, file.originalname);
-      console.log(file.originalname);
     },
   }),
   // 파일 최대 용량
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// api 요청 섹션 시작
+//------------------------------ api 요청 ------------------------------//
 
 /* GET 파일 업로드 */
 
@@ -63,20 +74,13 @@ router.post("/upload", upload.single("file"), function (req, res, next) {
 });
 
 // n개 파일 업로드 multer.array(, 개수제한)
-/* POST users listing. */
-router.post("/", upload.array("files", 10), function (req, res, next) {
+router.post("/uploads", upload.array("files", 10), function (req, res, next) {
   console.log(req.files);
-  // res.json(`~~post 요청 응답~~`);
   res
     .status(200)
     .send(
       response.success(200, "파일 업로드 성공", `파일개수: ${req.files.length}`)
     );
-});
-
-/* GET 파일 다운로드 */
-router.get("/upload", function (req, res, next) {
-  res.send("GET 파일 다운로드");
 });
 
 module.exports = router;
