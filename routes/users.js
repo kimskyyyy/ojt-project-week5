@@ -5,6 +5,8 @@ const uuid = require("uuid"); // uuid 모듈 추가
 var UserRealm = require("../db/realm");
 var account = require("../module/accountModule");
 
+const response = require("../util/response");
+
 /* GET 계정 전체 조회 */
 router.get("/", function (req, res, next) {
   const users = UserRealm.objects("User").sorted("date", true);
@@ -41,16 +43,10 @@ router.post("/", function (req, res, next) {
       });
     });
 
-    res.status(201).send({
-      success: true,
-      message: "계정 추가 성공",
-    });
+    res.status(201).send(response.success(201, "계정 추가 성공"));
   } catch (error) {
     console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "계정 추가 실패",
-    });
+    res.status(500).send(response.fail(500, "계정 추가 실패"));
   }
 });
 
@@ -64,17 +60,11 @@ router.delete("/:email", function (req, res, next) {
         UserRealm.delete(user);
       });
 
-      res.send({
-        success: true,
-        message: "계정 삭제 성공",
-      });
+      res.send(response.success(200, "계정 삭제 성공"));
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "계정 삭제 실패",
-    });
+    res.status(500).send(response.fail(500, "계정 삭제 실패"));
   }
 });
 
@@ -89,38 +79,25 @@ router.put("/:email", function (req, res, next) {
         user.password = req.body.newPassword;
       });
 
-      res.status(200).send({
-        success: true,
-        message: "비밀번호 변경 성공",
-      });
+      res.status(200).send(rsponse.true(200, "비밀번호 변경 성공"));
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "비밀번호 변경 실패",
-    });
+    res.status(500).send(response.fail(500, "비밀번호 변경 실패"));
   }
 });
 
 /* POST 로그인 */
 router.post("/login", function (req, res, next) {
-  result = account(req, res, next);
+  result = account.account(req, res, next);
 
   console.log("result: " + result);
   console.log("result.token: " + result.token);
 
   if (result) {
-    res.status(200).send({
-      success: true,
-      message: "로그인 성공",
-      data: result,
-    });
+    res.status(200).send(response.success(200, "로그인 성공", result.token));
   } else {
-    res.status(500).send({
-      success: false,
-      message: "로그인 실패",
-    });
+    res.status(500).send(response.fail(500, "로그인 실패"));
   }
 });
 
