@@ -1,2 +1,18 @@
-# Ignore node_modules directory
+# .gitignore
+
+# 프로젝트의 의존성 모듈이 설치되는 node_modules/ 디렉토리 제외시킴
+# 노드 모듈을 패키지 매니저(npm)를 사용하여 필요한 시점에 설치하는 것을 권장함
 node_modules/
+
+# 환경변수 파일
+# 보안에 민감한 정보(API키, DB 비밀번호 등)를 포함하고 있으므로, 공개된 저장소에는 올리지 않는 것이 좋음
+.env
+
+# Mac사용자를 위한 디렉토리 내부에 생성되는 파일
+.DS_Store
+
+# 로그 파일이 저장되는 디렉토리
+logs/
+
+# 로그 파일 그 자체
+*.log
