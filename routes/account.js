@@ -6,7 +6,7 @@ const response = require("../util/response");
 
 /* POST 계정 인증 */
 router.post("/", function (req, res, next) {
-  result = account(req, res, next);
+  result = account.account(req, res, next);
 
   console.log("result: " + result);
   console.log("result.token: " + result.token);
