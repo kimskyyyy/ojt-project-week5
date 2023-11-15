@@ -1,9 +1,9 @@
 var express = require("express");
 var router = express.Router();
 
-const uuid = require("uuid"); // uuid 모듈 추가
 var UserRealm = require("../db/realm");
 var account = require("../module/accountModule");
+var logging = require("../util/logger");
 
 const response = require("../util/response");
 
@@ -89,10 +89,8 @@ router.put("/:email", function (req, res, next) {
 
 /* POST 로그인 */
 router.post("/login", function (req, res, next) {
+  logging.info("로그인 요청", { email: req.body.email });
   result = account.account(req, res, next);
-
-  console.log("result: " + result);
-  console.log("result.token: " + result.token);
 
   if (result) {
     res.status(200).send(response.success(200, "로그인 성공", result.token));

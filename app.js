@@ -3,6 +3,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser"); // 쿠키를 파싱하고 사용하기 위한 미들웨어
 var logger = require("morgan"); // HTTP 요청에 대한 로그를 출력하는 미들웨어
+var logging = require("./util/logger"); // 로그 모듈
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
