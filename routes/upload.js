@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const multer = require("multer"); // multer 모듈 추가
-const fs = require("fs"); // fs 모듈 추가
-const path = require("path"); // path 모듈 추가
+const multer = require("multer"); // multer 모듈: 파일 업로드를 위한 multipart/form-data 를 다루기 위한 node.js 의 미들웨어
+const fs = require("fs"); // fs 모듈: 파일 시스템을 조작하는 다양한 메서드 제공
+const path = require("path"); // path 모듈: 파일 및 디렉토리 경로 작업을 위한 다양한 메서드 제공
 
 const session = require("../module/sessionModule"); // session 모듈 추가
 
