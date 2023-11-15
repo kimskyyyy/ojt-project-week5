@@ -2,8 +2,9 @@ var express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const createHttpError = require("http-errors");
-// const response = require("../util/response");
+// const createHttpError = require("http-errors");
+
+const response = require("../util/response");
 
 var router = express.Router(); // router 객체는 express.Router()로 만듦
 
@@ -35,16 +36,13 @@ router.get("/download/:fileName", function (req, res, next) {
     // 파일의 Content-Disposition 헤더를 "inline"으로 설정하여 파일을 브라우저에서 바로 보기
     res.setHeader("Content-Disposition", "inline; filename=" + fileName);
 
-    // res.status(200).send(response.success(200), "파일 다운로드 성공");
+    res.status(200).send(response.success(200), "파일 다운로드 성공");
 
     // 파일 스트림을 응답에 연결
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
   } else {
-    // res.status(404).send(response.fail(404, "파일이 존재하지 않습니다."));
-    res
-      .status(404)
-      .send({ success: false, message: "파일이 존재하지 않습니다." });
+    res.status(404).send(response.fail(404, "파일이 존재하지 않습니다."));
   }
 });
 

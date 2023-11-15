@@ -7,6 +7,8 @@ const path = require("path"); // path 모듈 추가
 
 const session = require("../module/sessionModule"); // session 모듈 추가
 
+const response = require("../util/response");
+
 // 파일을 업로드할 uploads 폴더 생성
 fs.readdir("uploads", (error) => {
   if (error) {
@@ -50,19 +52,13 @@ router.post("/upload", upload.single("file"), function (req, res, next) {
     console.log(req.file);
     const imagePath = req.file.path;
     if (imagePath === undefined) {
-      // return res.status(400).send(response.fail(400, "파일이 없습니다."));
-      return res
-        .status(400)
-        .send({ success: false, message: "파일이 없습니다." });
+      return res.status(400).send(response.fail(400, "파일이 없습니다."));
     }
     res
       .status(200)
-      // .send(response.success(200, "파일 업로드 성공", `저장경로: /${imagePath}`));
-      .send({
-        success: true,
-        message: "파일 업로드 성공",
-        path: `/${imagePath}`,
-      });
+      .send(
+        response.success(200, "파일 업로드 성공", `저장경로: /${imagePath}`)
+      );
   }
 });
 
@@ -71,10 +67,11 @@ router.post("/upload", upload.single("file"), function (req, res, next) {
 router.post("/", upload.array("files", 10), function (req, res, next) {
   console.log(req.files);
   // res.json(`~~post 요청 응답~~`);
-  res.status(200).send(
-    // response.success(200, "파일 업로드 성공", `파일개수: ${req.files.length}`)
-    { success: true, message: "파일 업로드 성공", count: req.files.length }
-  );
+  res
+    .status(200)
+    .send(
+      response.success(200, "파일 업로드 성공", `파일개수: ${req.files.length}`)
+    );
 });
 
 /* GET 파일 다운로드 */
