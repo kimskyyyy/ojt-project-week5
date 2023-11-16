@@ -7,13 +7,14 @@ const path = require("path"); // path 모듈: 파일 및 디렉토리 경로 작
 
 const session = require("../module/sessionModule"); // session 모듈
 const response = require("../util/response"); // 공통 응답 모듈
+var logging = require("../util/logger"); // 로그 모듈
 
 //------------------------------ 파일 업로드 관련 설정------------------------------//
 
 // 파일을 업로드할 uploads 폴더 생성
 fs.readdir("uploads", (error) => {
   if (error) {
-    console.log("uploads 폴더를 생성합니다.");
+    logging.info("uploads 폴더가 없어 uploads 폴더를 생성합니다.");
     fs.mkdirSync("uploads");
   }
 });
@@ -59,8 +60,8 @@ router.post("/upload", upload.single("file"), function (req, res, next) {
   result = session(req, res, next);
 
   if (result) {
-    console.log("단일 파일 업로드 요청");
-    console.log(req.file);
+    logging.info("파일 업로드 요청", { user: result });
+    logging.info("파일 정보", { file: req.file });
     const imagePath = req.file.path;
     if (imagePath === undefined) {
       return res.status(400).send(response.fail(400, "파일이 없습니다."));
@@ -75,7 +76,7 @@ router.post("/upload", upload.single("file"), function (req, res, next) {
 
 // n개 파일 업로드 multer.array(, 개수제한)
 router.post("/uploads", upload.array("files", 10), function (req, res, next) {
-  console.log(req.files);
+  logging.info(`파일 다중 업로드 요청 : ${req.files}`);
   res
     .status(200)
     .send(

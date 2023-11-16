@@ -7,11 +7,13 @@ const fs = require("fs");
 
 const session = require("../module/sessionModule"); // session 모듈
 const response = require("../util/response"); // 공통 응답 모듈
+var logging = require("../util/logger"); // 로그 모듈
 
 //------------------------------ api 요청 ------------------------------//
 
 /* GET users listing. */
 router.get("/download/:fileName", function (req, res, next) {
+  logging.info("파일 다운로드 요청", { 요청정보: req.params });
   // 사용자 인증
   result = session(req, res, next);
 
@@ -19,10 +21,7 @@ router.get("/download/:fileName", function (req, res, next) {
     const fileName = req.params.fileName;
     const filePath = `uploads/${fileName}`;
 
-    console.log(`fileName: ${fileName}`);
-    console.log(`filePath: ${filePath}`);
-    const ch = fs.existsSync(filePath);
-    console.log(`파일 존재여부: ${ch}`);
+    const ch = fs.existsSync(filePath); // 파일 존재 여부
 
     // 다운로드 요청한 파일이 존재하는지 확인
     if (fs.existsSync(filePath)) {
@@ -38,6 +37,8 @@ router.get("/download/:fileName", function (req, res, next) {
     } else {
       res.status(404).send(response.fail(404, "파일이 존재하지 않습니다."));
     }
+  } else if (result == 0) {
+    res.status(401).send(response.fail(401, "사용자 인증 실패"));
   }
 });
 

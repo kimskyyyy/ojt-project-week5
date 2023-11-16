@@ -3,12 +3,12 @@ var router = express.Router();
 
 var UserRealm = require("../db/realm");
 var account = require("../module/accountModule");
-var logging = require("../util/logger");
-
+var logging = require("../util/logger"); // 로그 모듈
 const response = require("../util/response");
 
 /* GET 계정 전체 조회 */
 router.get("/", function (req, res, next) {
+  logging.info("GET: 계정 전체 조회");
   const users = UserRealm.objects("User").sorted("date", true);
 
   res.send({
@@ -20,15 +20,12 @@ router.get("/", function (req, res, next) {
 /* POST 계정 추가. */
 // todo: 이메일 중복체크
 router.post("/", function (req, res, next) {
-  console.log(req.body);
-  console.log(req.body.email);
+  logging.info("POST: 계정 추가", { body: req.body });
 
   var email = req.body.email;
   var password = req.body.password;
   var name = req.body.name;
   var tel = req.body.tel;
-
-  console.log(`계정 데이터: ${email}`);
 
   try {
     UserRealm.write(() => {
@@ -45,13 +42,14 @@ router.post("/", function (req, res, next) {
 
     res.status(201).send(response.success(201, "계정 추가 성공"));
   } catch (error) {
-    console.log(error);
+    logging.error("계정 추가 실패", { error: error });
     res.status(500).send(response.fail(500, "계정 추가 실패"));
   }
 });
 
 /* DELETE 계정 삭제 */
 router.delete("/:email", function (req, res, next) {
+  logging.info("DELETE: 계정 삭제", { email: req.params.email });
   const user = account.findUserByEmail(req.params.email);
 
   try {
@@ -63,13 +61,14 @@ router.delete("/:email", function (req, res, next) {
       res.send(response.success(200, "계정 삭제 성공"));
     }
   } catch (error) {
-    console.log(error);
+    logging.error("계정 삭제 실패", { error: error });
     res.status(500).send(response.fail(500, "계정 삭제 실패"));
   }
 });
 
 /* PUT 비밀번호 변경. */
 router.put("/:email", function (req, res, next) {
+  logging.info("PUT: 비밀번호 변경", { email: req.params.email });
   const user = account.findUserByEmail(req.params.email);
   const password = account.findPassword(user.password, req.body.inputPassword);
 
@@ -82,7 +81,7 @@ router.put("/:email", function (req, res, next) {
       res.status(200).send(rsponse.true(200, "비밀번호 변경 성공"));
     }
   } catch (error) {
-    console.log(error);
+    logging.error("비밀번호 변경 실패", { error: error });
     res.status(500).send(response.fail(500, "비밀번호 변경 실패"));
   }
 });

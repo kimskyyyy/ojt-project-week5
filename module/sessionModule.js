@@ -15,16 +15,16 @@ function session(req, res, next) {
   }
 
   try {
+    // 이메일 && 토큰이 true인 사용자 찾기
     const user = UserRealm.objects("User").filtered(
       `email = "${email}" AND token = "${token}"`
     )[0];
 
-    // 토큰 만료시간 확인
-    new Date() > user.tokenExp
-      ? logging.error("토큰 만료")
-      : logging.info("사용자 인증 성공", { user: user });
-    // 이메일 && 토큰이 true인 사용자가 있으면 인증 성공
-    if (user) {
+    if (user && new Date() > user.tokenExp) {
+      logging.error("토큰 만료");
+      return 0;
+    } else {
+      logging.info("사용자 인증 성공", { user: user });
       // 토큰 만료시간
       const tokenExp = new Date();
       tokenExp.setDate(tokenExp.getDate() + 30);
@@ -33,13 +33,7 @@ function session(req, res, next) {
       UserRealm.write(() => {
         user.tokenExp = tokenExp;
       });
-      console.log(`user.tokenExp: ${user.tokenExp}`);
-
       return user;
-    } else {
-      // 이메일 && 토큰이 true인 사용자가 없으면 인증 실패
-      logging.error("사용자 인증 실패");
-      return 0;
     }
   } catch (error) {
     logging.error("사용자 인증 실패", error);

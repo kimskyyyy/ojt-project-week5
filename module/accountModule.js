@@ -1,5 +1,6 @@
 var UserRealm = require("../db/realm");
 const uuid = require("uuid"); // uuid 모듈 추가
+var logging = require("../util/logger"); // 로그 모듈
 
 //------------------------------ 공통 메서드------------------------------//
 
@@ -16,11 +17,9 @@ function findPassword(password, inputPassword) {
 //------------------------------ 계정 관련 메서드------------------------------//
 
 function account(req, res, next) {
+  logging.info("계정 인증 요청", { 요청정보: req.body });
   const user = findUserByEmail(req.body.email);
-  console.log(JSON.stringify(user));
   const password = findPassword(user.password, req.body.inputPassword);
-  console.log(`user확인: ${user}`);
-  console.log(`password확인: ${password}`);
 
   try {
     if (user && password) {
@@ -28,12 +27,11 @@ function account(req, res, next) {
         const sessionToken = uuid.v4(); // uuid를 사용해서 세션 토큰 생성
         user.token = sessionToken; // 세션 토큰 저장
       });
-      console.log(JSON.stringify(user));
-      console.log(`user.token 찍어보기: ${user.token}`);
+      logging.info("계정 인증 성공", { user: user });
       return user;
     }
   } catch (error) {
-    console.log(error);
+    logging.error("사용자 인증 실패", error);
     return 0;
   }
 }
