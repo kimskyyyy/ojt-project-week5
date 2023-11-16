@@ -8,10 +8,11 @@ const logger = winston.createLogger({
   ],
   // 로그 형식 지정
   format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.metadata({ fillExcept: ["level", "message", "timestamp"] }),
-    winston.format.json(),
-    winston.format.simple()
+    // combine을 사용하여 여러 형식을 조합할 것을 배열로 정의
+    winston.format.timestamp(), //  시간 출력
+    winston.format.colorize(), // 색상 출력
+    winston.format.json(), // JSON 형식으로 출력
+    winston.format.simple() // ${info.level}: ${info.message} 형식으로 출력
   ),
 });
 
