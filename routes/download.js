@@ -12,6 +12,7 @@ const response = require("../util/response"); // 공통 응답 모듈
 
 /* GET users listing. */
 router.get("/download/:fileName", function (req, res, next) {
+  // 사용자 인증
   result = session(req, res, next);
 
   if (result) {

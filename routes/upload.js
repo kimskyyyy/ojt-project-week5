@@ -55,8 +55,8 @@ const upload = multer({
 
 // 단일 파일 업로드 multer.single(fileName)
 router.post("/upload", upload.single("file"), function (req, res, next) {
+  // 사용자 인증
   result = session(req, res, next);
-  console.log(`result!!!! ${result}`);
 
   if (result) {
     console.log("단일 파일 업로드 요청");
