@@ -56,6 +56,8 @@ const upload = multer({
 
 // 단일 파일 업로드 multer.single(fileName)
 router.post("/upload", upload.single("file"), function (req, res, next) {
+  logging.info("POST/ 파일 업로드 요청", { 요청정보: req.file });
+
   // 사용자 인증
   result = session(req, res, next);
 
@@ -76,7 +78,7 @@ router.post("/upload", upload.single("file"), function (req, res, next) {
 
 // n개 파일 업로드 multer.array(, 개수제한)
 router.post("/uploads", upload.array("files", 10), function (req, res, next) {
-  logging.info(`파일 다중 업로드 요청 : ${req.files}`);
+  logging.info(`POST/ 파일 다중 업로드 요청 : ${req.files}`);
   res
     .status(200)
     .send(

@@ -13,7 +13,7 @@ var logging = require("../util/logger"); // 로그 모듈
 
 /* GET users listing. */
 router.get("/download/:fileName", function (req, res, next) {
-  logging.info("파일 다운로드 요청", { 요청정보: req.params });
+  logging.info("GET/ 파일 다운로드 요청", { 요청정보: req.params });
   // 사용자 인증
   result = session(req, res, next);
 
