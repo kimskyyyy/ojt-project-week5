@@ -1,6 +1,7 @@
 var UserRealm = require("../db/realm");
 const uuid = require("uuid"); // uuid 모듈 추가
-var logging = require("../util/logger"); // 로그 모듈
+const logging = require("../util/logger"); // 로그 모듈
+const bcrypt = require("../module/hashPasswordModule"); // 비밀번호 암호화 모듈
 
 //------------------------------ 공통 메서드------------------------------//
 
@@ -16,19 +17,35 @@ function findPassword(password, inputPassword) {
 
 //------------------------------ 계정 관련 메서드------------------------------//
 
-function account(req, res, next) {
+async function account(req, res, next) {
   logging.info("계정 인증 요청", { 요청정보: req.body });
   const user = findUserByEmail(req.body.email);
-  const password = findPassword(user.password, req.body.inputPassword);
+
+  console.log("user.password", user.password);
+  console.log("req.body.inputPassword", req.body.inputPassword);
 
   try {
-    if (user && password) {
+    const passwordMatch = await bcrypt.comparePasswords(
+      req.body.inputPassword, // 입력된 비밀번호
+      user.password // 해시된 비밀번호
+    );
+
+    console.log(passwordMatch);
+
+    if (user && passwordMatch) {
+      const sessionToken = uuid.v4(); // uuid를 사용해서 세션 토큰 생성
+      // 토큰 만료시간 설정
+      const tokenExp = new Date();
+      tokenExp.setDate(tokenExp.getDate() + 30);
       UserRealm.write(() => {
-        const sessionToken = uuid.v4(); // uuid를 사용해서 세션 토큰 생성
         user.token = sessionToken; // 세션 토큰 저장
+        user.tokenExp = tokenExp; // 토큰 만료시간 저장
       });
       logging.info("계정 인증 성공", { user: user });
       return user;
+    } else {
+      logging.error("계정 인증 실패", { user: user });
+      return 0;
     }
   } catch (error) {
     logging.error("사용자 인증 실패", error);
